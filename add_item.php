@@ -1,5 +1,6 @@
 <?php
 // add_item.php
+// flori
 
 // Database connection parameters
 $servername = "localhost";
