@@ -1,11 +1,12 @@
 <?php
 // view_items.php
+// flori
 
 // Database connection parameters
 $servername = "localhost";
 $username = "item_db";     // Replace with your MySQL username
 $password = "haxx0r";     // Replace with your MySQL password
-$dbname = "item_db";             // Ensure this matches your database name
+$dbname = "shop_db";             // Ensure this matches your database name
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
