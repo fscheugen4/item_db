@@ -24,6 +24,7 @@ $result = $conn->query($sql);
 <html>
 <head>
     <title>Items for Sale</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Items for Sale</h1>

@@ -1,0 +1,107 @@
+/* styles.css */
+
+/* General Styles */
+body {
+    background-color: #f0f8ff; /* Alice Blue */
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+h1 {
+    background-color: #cfe2f3; /* Pastel Blue */
+    color: #333;
+    padding: 20px;
+    text-align: center;
+    margin: 0;
+}
+
+/* Navigation Links */
+a {
+    color: #0b5394; /* Darker Blue */
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Form Styles */
+form {
+    background-color: #d9dff5; /* Light Pastel Blue */
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #a4c2f4;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+input[type="submit"] {
+    background-color: #6fa8dc; /* Medium Pastel Blue */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #3d85c6; /* Darker Pastel Blue */
+}
+
+/* Table Styles */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #a4c2f4;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #cfe2f3; /* Pastel Blue */
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    form, table {
+        width: 100%;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+    }
+}
