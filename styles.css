@@ -105,3 +105,27 @@ tr:nth-child(even) {
         width: 100%;
     }
 }
+
+button {
+    background-color: #6fa8dc;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #3d85c6;
+}
+
+/* Save and Cancel Buttons */
+.save-btn, .cancel-btn {
+    background-color: #93c47d; /* Green */
+}
+
+.save-btn:hover, .cancel-btn:hover {
+    background-color: #6aa84f;
+}
