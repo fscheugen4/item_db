@@ -25,6 +25,7 @@ $result = $conn->query($sql);
 <head>
     <title>Items for Sale</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Items for Sale</h1>

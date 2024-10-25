@@ -1,0 +1,2 @@
+1. run create_tables.sql
+2.
