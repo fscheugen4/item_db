@@ -3,8 +3,8 @@
 
 // Database connection parameters
 $servername = "localhost";
-$username = "your_username";     // Replace with your MySQL username
-$password = "your_password";     // Replace with your MySQL password
+$username = "item_db";     // Replace with your MySQL username
+$password = "haxx0r";     // Replace with your MySQL password
 $dbname = "shop_db";             // Ensure this matches your database name
 
 ?>
