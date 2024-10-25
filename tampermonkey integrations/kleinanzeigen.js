@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kleinanzeigen Import to item_db
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Adds a button to import items to item_db
+// @version      1.2
+// @description  Adds a button to import items to item_db on ad editing page
 // @author       Your Name
 // @match        https://www.kleinanzeigen.de/*
 // @grant        GM_xmlhttpRequest
-// @connect      http://localhost:8080/item_db/item_db/endpoint.php
+// @connect      http://localhost:8080/item_db/item_db/endpoint.php'
 // ==/UserScript==
 
 (function() {
@@ -14,8 +14,8 @@
 
     // Wait for the page to fully load
     window.addEventListener('load', function() {
-        // Check if we're on an item page by looking for a unique element
-        if (document.querySelector('[data-testid="page-title"]')) {
+        // Check if we're on the ad editing page
+        if (window.location.pathname.startsWith('/p-anzeige-bearbeiten.html')) {
             addImportButton();
         }
     });
@@ -40,26 +40,28 @@
 
         // Add click event listener
         importButton.addEventListener('click', function() {
-            // Extract item data
-            const itemName = document.querySelector('[data-testid="page-title"]').innerText.trim();
-            const itemDescription = document.querySelector('[data-testid="description"]').innerText.trim();
-            const itemPriceElement = document.querySelector('[data-testid="advert-price"]');
-            let itemPrice = 0.00;
-            if (itemPriceElement) {
-                const priceText = itemPriceElement.innerText.trim();
-                // Extract numerical value from the price text
-                itemPrice = parseFloat(priceText.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0.00;
+            // Extract item data from form fields using updated selectors
+            const itemNameInput = document.querySelector('input#postad-title');
+            const itemDescriptionTextarea = document.querySelector('textarea#pstad-descrptn');
+            const itemPriceInput = document.querySelector('input#micro-frontend-price');
+
+            if (itemNameInput && itemDescriptionTextarea && itemPriceInput) {
+                const itemName = itemNameInput.value.trim();
+                const itemDescription = itemDescriptionTextarea.value.trim();
+                const itemPrice = parseFloat(itemPriceInput.value.replace(',', '.')) || 0.00;
+
+                // Prepare data object
+                const itemData = {
+                    name: itemName,
+                    description: itemDescription,
+                    price: itemPrice.toFixed(2)
+                };
+
+                // Send data to your server
+                sendDataToServer(itemData);
+            } else {
+                alert('Unable to extract item data. Please ensure you are on the correct page.');
             }
-
-            // Prepare data object
-            const itemData = {
-                name: itemName,
-                description: itemDescription,
-                price: itemPrice.toFixed(2)
-            };
-
-            // Send data to your server
-            sendDataToServer(itemData);
         });
     }
 

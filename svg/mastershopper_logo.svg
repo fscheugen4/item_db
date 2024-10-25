@@ -1,0 +1,16 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trophy Base -->
+  <rect x="85" y="140" width="30" height="10" fill="#B8860B"/>
+  <!-- Trophy Cup Shaped as Shopping Bag -->
+  <rect x="70" y="80" width="60" height="60" fill="#FFD700" rx="10" ry="10"/>
+  <!-- Trophy Handles -->
+  <path d="M70,90 C50,90 50,130 70,130" fill="none" stroke="#FFD700" stroke-width="8"/>
+  <path d="M130,90 C150,90 150,130 130,130" fill="none" stroke="#FFD700" stroke-width="8"/>
+  <!-- Bag Handles -->
+  <path d="M80,80 C80,60 120,60 120,80" fill="none" stroke="#B8860B" stroke-width="4"/>
+  <!-- Upward Arrow Inside Bag -->
+  <path d="M100,110 L100,90" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="90,100 100,80 110,100" fill="#FFFFFF"/>
+  <!-- Text Label -->
+  <text x="100" y="180" font-family="Arial" font-size="22" text-anchor="middle" fill="#333">Master-shopper</text>
+</svg>
