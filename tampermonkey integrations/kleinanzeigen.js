@@ -1,12 +1,14 @@
 // ==UserScript==
-// @name         Kleinanzeigen Import to item_db
+// @name         Kleinanzeigen Import to floris_shop_db
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Adds a button to import items to item_db on ad editing page
-// @author       Your Name
+// @version      1.4
+// @description  Adds a button to import items to floris_shop_db on ad editing page
+// @author       Flori
 // @match        https://www.kleinanzeigen.de/*
 // @grant        GM_xmlhttpRequest
-// @connect      http://localhost:8080/item_db/item_db/endpoint.php'
+// @connect      yourserver.com
+// @connect      localhost
+// @connect      localhost:8080
 // ==/UserScript==
 
 (function() {
@@ -23,7 +25,7 @@
     function addImportButton() {
         // Create the button
         const importButton = document.createElement('button');
-        importButton.textContent = 'Import to item_db';
+        importButton.textContent = 'Import to floris_shop_db';
         importButton.style.position = 'fixed';
         importButton.style.top = '10px';
         importButton.style.right = '10px';
@@ -40,25 +42,51 @@
 
         // Add click event listener
         importButton.addEventListener('click', function() {
-            // Extract item data from form fields using updated selectors
-            const itemNameInput = document.querySelector('input#postad-title');
-            const itemDescriptionTextarea = document.querySelector('textarea#pstad-descrptn');
-            const itemPriceInput = document.querySelector('input#micro-frontend-price');
+            // Extract item data from form fields
+            const itemNameInput = document.querySelector('input[name="postAdForm.title"]');
+            const itemDescriptionTextarea = document.querySelector('textarea[name="postAdForm.description"]');
+            const itemPriceInput = document.querySelector('input[name="postAdForm.price"]');
+            const itemImageInput = document.querySelector('input[name="postAdForm.images"]'); // Adjust selector as needed
+            const itemStateSelect = document.querySelector('select[name="postAdForm.condition"]');
+            const adDateElement = document.querySelector('input[name="postAdForm.startDate"]'); // Adjust selector as needed
 
             if (itemNameInput && itemDescriptionTextarea && itemPriceInput) {
                 const itemName = itemNameInput.value.trim();
                 const itemDescription = itemDescriptionTextarea.value.trim();
                 const itemPrice = parseFloat(itemPriceInput.value.replace(',', '.')) || 0.00;
+                const kleinanzeigenState = itemStateSelect ? itemStateSelect.value : '';
+                const kleinanzeigenDate = adDateElement ? adDateElement.value : '';
 
-                // Prepare data object
-                const itemData = {
-                    name: itemName,
-                    description: itemDescription,
-                    price: itemPrice.toFixed(2)
-                };
+                // Extract image data
+                let itemImage = '';
+                if (itemImageInput && itemImageInput.files && itemImageInput.files[0]) {
+                    const file = itemImageInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        itemImage = e.target.result;
 
-                // Send data to your server
-                sendDataToServer(itemData);
+                        // After image data is read, proceed to send data
+                        sendDataToServer({
+                            name: itemName,
+                            description: itemDescription,
+                            price: itemPrice.toFixed(2),
+                            image: itemImage,
+                            kleinanzeigen_state: kleinanzeigenState,
+                            kleinanzeigen_date: kleinanzeigenDate
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // If no image selected, proceed without image data
+                    sendDataToServer({
+                        name: itemName,
+                        description: itemDescription,
+                        price: itemPrice.toFixed(2),
+                        image: '',
+                        kleinanzeigen_state: kleinanzeigenState,
+                        kleinanzeigen_date: kleinanzeigenDate
+                    });
+                }
             } else {
                 alert('Unable to extract item data. Please ensure you are on the correct page.');
             }
@@ -68,16 +96,21 @@
     function sendDataToServer(data) {
         GM_xmlhttpRequest({
             method: 'POST',
-            url: 'http://localhost:8080/item_db/item_db/endpoint.php', // Replace with your actual endpoint
+            url: 'https://experten.bottomoftheinternet.com/flo/endpoint.php', // Replace with your actual endpoint
             headers: {
                 'Content-Type': 'application/json'
             },
             data: JSON.stringify(data),
             onload: function(response) {
-                if (response.status === 200) {
-                    alert('Item imported successfully!');
-                } else {
-                    alert('Failed to import item. Server responded with status: ' + response.status);
+                try {
+                    const serverResponse = JSON.parse(response.responseText);
+                    if (response.status === 200 && serverResponse.success) {
+                        alert('Item imported successfully: ' + serverResponse.message);
+                    } else {
+                        alert('Server error: ' + serverResponse.error);
+                    }
+                } catch (e) {
+                    alert('Failed to parse server response: ' + e.message);
                 }
             },
             onerror: function() {

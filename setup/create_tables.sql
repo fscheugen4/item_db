@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS floris_shop_db;
+CREATE DATABASE IF NOT EXISTS dbs13497512;
 
 -- Use the database
-USE floris_shop_db;
+USE dbs13497512;
 
 -- Create the items table
 CREATE TABLE IF NOT EXISTS floris_shop_db (
