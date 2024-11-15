@@ -58,8 +58,20 @@ $(document).ready(function() {
         row.find('.kleinanzeigen_state').html('<input type="text" value="'+state+'">');
         row.find('.kleinanzeigen_date').html('<input type="date" value="'+date+'">');
 
-        // Add image upload field
-        row.find('td:eq(4)').html('<input type="file" class="edit-image" accept="image/*">');
+        // Display existing images with delete option
+        var imagesCell = row.find('td:eq(4)');
+        var imagesHtml = '';
+        imagesCell.find('img').each(function() {
+            var imgSrc = $(this).attr('src');
+            var imageId = $(this).data('image-id');
+            imagesHtml += '<div class="image-wrapper">';
+            imagesHtml += '<img src="'+imgSrc+'" data-image-id="'+imageId+'" width="100">';
+            imagesHtml += '<button class="delete-image-btn" data-image-id="'+imageId+'">Delete</button>';
+            imagesHtml += '</div>';
+        });
+
+        imagesHtml += '<input type="file" class="edit-images" name="images[]" accept="image/*" multiple>';
+        imagesCell.html(imagesHtml);
 
         // Change buttons
         $(this).hide();
@@ -68,8 +80,17 @@ $(document).ready(function() {
         row.find('.cancel-btn').show();
     });
 
+    // Handle image deletion
+    var imagesToDelete = [];
+    $(document).on('click', '.delete-image-btn', function() {
+        var imageId = $(this).data('image-id');
+        imagesToDelete.push(imageId);
+        $(this).closest('.image-wrapper').remove();
+    });
+
     // Cancel edit
     $(document).on('click', '.cancel-btn', function() {
+        imagesToDelete = [];
         loadItems();
     });
 
@@ -82,7 +103,7 @@ $(document).ready(function() {
         var price = row.find('.price input').val();
         var state = row.find('.kleinanzeigen_state input').val();
         var date = row.find('.kleinanzeigen_date input').val();
-        var imageFile = row.find('.edit-image')[0].files[0];
+        var imageFiles = row.find('.edit-images')[0].files;
 
         var formData = new FormData();
         formData.append('id', id);
@@ -92,8 +113,14 @@ $(document).ready(function() {
         formData.append('kleinanzeigen_state', state);
         formData.append('kleinanzeigen_date', date);
 
-        if (imageFile) {
-            formData.append('image', imageFile);
+        // Append new images
+        for (var i = 0; i < imageFiles.length; i++) {
+            formData.append('images[]', imageFiles[i]);
+        }
+
+        // Append images to delete
+        if (imagesToDelete.length > 0) {
+            formData.append('delete_image_ids', imagesToDelete.join(','));
         }
 
         $.ajax({
@@ -107,6 +134,7 @@ $(document).ready(function() {
             success: function(data) {
                 if (data.success) {
                     alert('Item updated successfully.');
+                    imagesToDelete = [];
                     loadItems();
                 } else {
                     alert('Error: ' + data.message);

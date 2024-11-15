@@ -20,32 +20,55 @@ try {
         throw new Exception('Name and price are required.');
     }
 
-    // Handle the uploaded image
-    $imageData = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        // Get the image file content
-        $imageFile = $_FILES['image']['tmp_name'];
-        $imageContent = file_get_contents($imageFile);
-        // Encode the image to base64
-        $imageData = base64_encode($imageContent);
-    }
+    // Begin transaction
+    $conn->beginTransaction();
 
-    // Prepare and execute the SQL statement using prepared statements
-    $stmt = $conn->prepare("INSERT INTO floris_shop_db (name, description, price, image, kleinanzeigen_state, kleinanzeigen_date) VALUES (:name, :description, :price, :image, :kleinanzeigen_state, :kleinanzeigen_date)");
+    // Insert the item into floris_shop_db
+    $stmt = $conn->prepare("INSERT INTO floris_shop_db (name, description, price, kleinanzeigen_state, kleinanzeigen_date) VALUES (:name, :description, :price, :kleinanzeigen_state, :kleinanzeigen_date)");
     $stmt->execute([
         ':name' => $name,
         ':description' => $description,
         ':price' => $price,
-        ':image' => $imageData,
         ':kleinanzeigen_state' => $kleinanzeigen_state,
         ':kleinanzeigen_date' => $kleinanzeigen_date
     ]);
 
+    // Get the last inserted item ID
+    $itemId = $conn->lastInsertId();
+
+    // Handle multiple image uploads
+    if (isset($_FILES['images'])) {
+        $images = $_FILES['images'];
+        for ($i = 0; $i < count($images['name']); $i++) {
+            if ($images['error'][$i] === UPLOAD_ERR_OK) {
+                $imageFile = $images['tmp_name'][$i];
+                $imageContent = file_get_contents($imageFile);
+                $imageData = base64_encode($imageContent);
+
+                // Insert image into floris_item_images
+                $stmt = $conn->prepare("INSERT INTO floris_item_images (item_id, image) VALUES (:item_id, :image)");
+                $stmt->execute([
+                    ':item_id' => $itemId,
+                    ':image' => $imageData
+                ]);
+            } else {
+                // Handle file upload error if necessary
+                throw new Exception('Error uploading image: ' . $images['name'][$i]);
+            }
+        }
+    }
+
+    // Commit transaction
+    $conn->commit();
+
     $response['success'] = true;
 } catch (Exception $e) {
+    // Rollback transaction in case of error
+    if ($conn->inTransaction()) {
+        $conn->rollBack();
+    }
     $response['message'] = $e->getMessage();
 }
 
-// Return the JSON response
 echo json_encode($response);
 ?>

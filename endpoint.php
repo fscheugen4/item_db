@@ -14,7 +14,7 @@ header('Content-Type: application/json');
 // Include config file
 $config = require 'config.php';
 
-// Log file path (ensure the web server has write permissions)
+// Log file path
 $log_file = __DIR__ . '/logs/logfile.log';
 
 // Function to write logs
@@ -45,30 +45,46 @@ if ($data) {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ]);
 
-        // Prepare SQL statement
-        $stmt = $pdo->prepare("INSERT INTO floris_shop_db (name, description, price, image, kleinanzeigen_state, kleinanzeigen_date) VALUES (:name, :description, :price, :image, :kleinanzeigen_state, :kleinanzeigen_date)");
+        // Begin transaction
+        $pdo->beginTransaction();
 
-        // Bind parameters
-        $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':price', $data['price'], PDO::PARAM_STR); // Using PARAM_STR for DECIMAL
-        $stmt->bindParam(':image', $data['image'], PDO::PARAM_STR);
-        $stmt->bindParam(':kleinanzeigen_state', $data['kleinanzeigen_state'], PDO::PARAM_STR);
-        $stmt->bindParam(':kleinanzeigen_date', $data['kleinanzeigen_date'], PDO::PARAM_STR);
+        // Insert into floris_shop_db table
+        $stmt = $pdo->prepare("INSERT INTO floris_shop_db (name, description, price, kleinanzeigen_state, kleinanzeigen_date) VALUES (:name, :description, :price, :kleinanzeigen_state, :kleinanzeigen_date)");
+        $stmt->execute([
+            ':name' => $data['name'],
+            ':description' => $data['description'],
+            ':price' => $data['price'],
+            ':kleinanzeigen_state' => $data['kleinanzeigen_state'],
+            ':kleinanzeigen_date' => $data['kleinanzeigen_date'],
+        ]);
 
-        // Execute the statement
-        $stmt->execute();
+        $itemId = $pdo->lastInsertId();
 
-        $insertId = $pdo->lastInsertId();
-        $success_message = 'Item inserted successfully with ID ' . $insertId;
+        // Insert images into item_images table
+        if (!empty($data['images']) && is_array($data['images'])) {
+            $imageStmt = $pdo->prepare("INSERT INTO item_images (item_id, image) VALUES (:item_id, :image)");
+            foreach ($data['images'] as $imageData) {
+                $imageStmt->execute([
+                    ':item_id' => $itemId,
+                    ':image' => $imageData,
+                ]);
+            }
+        }
+
+        // Commit transaction
+        $pdo->commit();
+
+        $success_message = 'Item inserted successfully with ID ' . $itemId;
         write_log($success_message);
         echo json_encode(['success' => true, 'message' => $success_message]);
     } catch (PDOException $e) {
+        $pdo->rollBack();
         http_response_code(500);
         $error_message = 'Database error: ' . $e->getMessage();
         write_log($error_message);
         echo json_encode(['error' => $error_message]);
     } catch (Exception $e) {
+        $pdo->rollBack();
         http_response_code(500);
         $error_message = 'General error: ' . $e->getMessage();
         write_log($error_message);

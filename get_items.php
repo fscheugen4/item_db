@@ -4,9 +4,9 @@
 // Include the database configuration
 require_once 'config.php';
 
-// Fetch items from the database
 try {
-    $sql = "SELECT id, name, description, price, image, kleinanzeigen_state, kleinanzeigen_date FROM floris_shop_db";
+    // Fetch items from the database
+    $sql = "SELECT * FROM floris_shop_db";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -19,7 +19,7 @@ try {
                     <th>Name</th>
                     <th>Description</th>
                     <th>Price ($)</th>
-                    <th>Image</th>
+                    <th>Images</th>
                     <th>State</th>
                     <th>Date</th>
                     <th>Actions</th>
@@ -31,12 +31,21 @@ try {
                     <td class="description">'.nl2br(htmlspecialchars($row['description'])).'</td>
                     <td class="price">'.number_format($row['price'], 2).'</td>';
 
-            // Display the image if available
-            if (!empty($row['image'])) {
-                echo '<td><img src="data:image/jpeg;base64,'. $row['image'] .'" alt="Image" width="100"></td>';
+            // Fetch images for this item
+            $stmtImages = $conn->prepare("SELECT image FROM floris_item_images WHERE item_id = :item_id");
+            $stmtImages->execute([':item_id' => $row['id']]);
+            $images = $stmtImages->fetchAll(PDO::FETCH_ASSOC);
+
+            // Display images
+            echo '<td>';
+            if (count($images) > 0) {
+                foreach ($images as $image) {
+                    echo '<img src="data:image/jpeg;base64,' . $image['image'] . '" alt="Image" width="100">';
+                }
             } else {
-                echo '<td>No Image</td>';
+                echo 'No Images';
             }
+            echo '</td>';
 
             echo '<td class="kleinanzeigen_state">'.htmlspecialchars($row['kleinanzeigen_state']).'</td>';
             echo '<td class="kleinanzeigen_date">'.htmlspecialchars($row['kleinanzeigen_date']).'</td>';

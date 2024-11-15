@@ -16,8 +16,8 @@
         <label for="price">Price ($):</label>
         <input type="number" id="price" name="price" step="0.01" required>
 
-        <label for="image">Image:</label>
-        <input type="file" id="image" name="image" accept="image/*">
+        <label for="images">Images:</label>
+        <input type="file" id="images" name="images[]" accept="image/*" multiple>
 
         <label for="kleinanzeigen_state">State:</label>
         <input type="text" id="kleinanzeigen_state" name="kleinanzeigen_state">
@@ -39,7 +39,7 @@
         $('#itemForm').submit(function(event) {
             event.preventDefault(); // Prevent the default form submission
 
-            // Create FormData object to handle file upload
+            // Create FormData object to handle file uploads
             var formData = new FormData(this);
 
             // Send the data using AJAX

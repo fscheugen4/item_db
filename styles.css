@@ -135,3 +135,29 @@ table img {
     max-width: 100px;
     height: auto;
 }
+
+/* Image Wrapper */
+.image-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 5px;
+}
+
+.image-wrapper img {
+    display: block;
+}
+
+.image-wrapper .delete-image-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.image-wrapper .delete-image-btn:hover {
+    background-color: rgba(255, 0, 0, 1);
+}
