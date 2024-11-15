@@ -1,6 +1,28 @@
-<!-- ... existing code ... -->
+<?php
+// view_items.php
 
-<script>
+// No need to set database parameters here
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Items for Sale</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Items for Sale</h1>
+    <a href="index.html">Add New Item</a><br><br>
+
+    <!-- Items Table -->
+    <div id="itemsTable">
+        <!-- Items will be loaded here -->
+    </div>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Add the script for loading and handling items -->
+    <script>
 $(document).ready(function() {
     loadItems();
 
@@ -124,3 +146,5 @@ $(document).ready(function() {
     });
 });
 </script>
+</body>
+</html>
