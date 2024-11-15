@@ -1,12 +1,7 @@
 <?php
 // view_items.php
 
-// Database connection parameters
-$servername = "localhost";
-$username = "item_db";     // Replace with your MySQL username
-$password = "haxx0r";     // Replace with your MySQL password
-$dbname = "shop_db";             // Ensure this matches your database name
-
+// No need to set database parameters here
 ?>
 <!DOCTYPE html>
 <html>

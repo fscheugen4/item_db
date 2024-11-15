@@ -5,7 +5,7 @@ CREATE DATABASE IF NOT EXISTS shop_db;
 USE shop_db;
 
 -- Create the items table
-CREATE TABLE IF NOT EXISTS items (
+CREATE TABLE IF NOT EXISTS shop_db (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,

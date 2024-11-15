@@ -2,6 +2,9 @@
 // add_item.php
 // flori
 
+// import DB creds
+require_once 'config.php';
+
 // Database connection parameters
 $servername = "localhost";
 $username = "item_db";     // Replace with your MySQL username

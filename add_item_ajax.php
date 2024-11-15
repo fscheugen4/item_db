@@ -2,21 +2,12 @@
 // add_item_ajax.php
 
 header('Content-Type: application/json');
-
-// Database connection parameters
-$servername = "localhost";
-$username = "item_db";     // Replace with your MySQL username
-$password = "haxx0r";     // Replace with your MySQL password
-$dbname = "shop_db";             // Ensure this matches your database name
-
 $response = array('success' => false, 'message' => '');
 
-try {
-    // Create a new PDO connection
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
-    // Set PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// Include the database configuration
+require_once 'config.php';
 
+try {
     // Get form data and sanitize inputs
     $name = $_POST['name'] ?? '';
     $description = $_POST['description'] ?? '';

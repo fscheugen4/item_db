@@ -2,19 +2,12 @@
 // update_item.php
 
 header('Content-Type: application/json');
-
-// Database connection parameters
-$servername = "localhost";
-$username = "item_db";     // Replace with your MySQL username
-$password = "haxx0r";     // Replace with your MySQL password
-$dbname = "shop_db";             // Ensure this matches your database name
-
 $response = array('success' => false, 'message' => '');
 
-try {
-    // Create a new PDO connection
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
+// Include the database configuration
+require_once 'config.php';
 
+try {
     // Get and sanitize POST data
     $id = $_POST['id'] ?? '';
     $name = $_POST['name'] ?? '';
