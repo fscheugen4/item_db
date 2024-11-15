@@ -129,3 +129,9 @@ button:hover {
 .save-btn:hover, .cancel-btn:hover {
     background-color: #6aa84f;
 }
+
+/* Image in Table */
+table img {
+    max-width: 100px;
+    height: auto;
+}

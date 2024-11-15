@@ -9,7 +9,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 $servername = "localhost";
 $username = "item_db";     // Replace with your MySQL username
 $password = "haxx0r";     // Replace with your MySQL password
-$dbname = "floris_shop_db";             // Ensure this matches your database name
+$dbname = "shop_db";             // Ensure this matches your database name
 
 // Create a new PDO connection
 try {

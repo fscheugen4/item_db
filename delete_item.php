@@ -16,7 +16,7 @@ try {
     }
 
     // Delete the item
-    $stmt = $conn->prepare("DELETE FROM items WHERE id = :id");
+    $stmt = $conn->prepare("DELETE FROM floris_shop_db WHERE id = :id");
     $stmt->execute([':id' => $id]);
 
     $response['success'] = true;

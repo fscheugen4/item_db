@@ -1,130 +1,126 @@
-<?php
-// view_items.php
+<!-- ... existing code ... -->
 
-// No need to set database parameters here
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Items for Sale</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Items for Sale</h1>
-    <a href="index.html">Add New Item</a><br><br>
+<script>
+$(document).ready(function() {
+    loadItems();
 
-    <!-- Items Table -->
-    <div id="itemsTable">
-        <!-- Items will be loaded here -->
-    </div>
+    // Function to load items
+    function loadItems() {
+        $.ajax({
+            url: 'get_items.php',
+            type: 'GET',
+            dataType: 'html',
+            success: function(data) {
+                $('#itemsTable').html(data);
+            },
+            error: function() {
+                alert('Failed to load items.');
+            }
+        });
+    }
 
-    <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    // Edit item
+    $(document).on('click', '.edit-btn', function() {
+        var id = $(this).data('id');
+        var row = $(this).closest('tr');
+        var name = row.find('.name').text();
+        var description = row.find('.description').text();
+        var price = row.find('.price').text();
+        var state = row.find('.kleinanzeigen_state').text();
+        var date = row.find('.kleinanzeigen_date').text();
 
-    <!-- Add the script for loading and handling items -->
-    <script>
-    $(document).ready(function() {
+        // Create editable fields
+        row.find('.name').html('<input type="text" value="'+name+'">');
+        row.find('.description').html('<textarea>'+description+'</textarea>');
+        row.find('.price').html('<input type="number" step="0.01" value="'+price+'">');
+        row.find('.kleinanzeigen_state').html('<input type="text" value="'+state+'">');
+        row.find('.kleinanzeigen_date').html('<input type="date" value="'+date+'">');
+
+        // Add image upload field
+        row.find('td:eq(4)').html('<input type="file" class="edit-image" accept="image/*">');
+
+        // Change buttons
+        $(this).hide();
+        row.find('.delete-btn').hide();
+        row.find('.save-btn').show();
+        row.find('.cancel-btn').show();
+    });
+
+    // Cancel edit
+    $(document).on('click', '.cancel-btn', function() {
         loadItems();
+    });
 
-        // Function to load items
-        function loadItems() {
-            $.ajax({
-                url: 'get_items.php',
-                type: 'GET',
-                dataType: 'html',
-                success: function(data) {
-                    $('#itemsTable').html(data);
-                },
-                error: function() {
-                    alert('Failed to load items.');
-                }
-            });
+    // Save edited item
+    $(document).on('click', '.save-btn', function() {
+        var id = $(this).data('id');
+        var row = $(this).closest('tr');
+        var name = row.find('.name input').val();
+        var description = row.find('.description textarea').val();
+        var price = row.find('.price input').val();
+        var state = row.find('.kleinanzeigen_state input').val();
+        var date = row.find('.kleinanzeigen_date input').val();
+        var imageFile = row.find('.edit-image')[0].files[0];
+
+        var formData = new FormData();
+        formData.append('id', id);
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('price', price);
+        formData.append('kleinanzeigen_state', state);
+        formData.append('kleinanzeigen_date', date);
+
+        if (imageFile) {
+            formData.append('image', imageFile);
         }
 
-        // Edit item
-        $(document).on('click', '.edit-btn', function() {
-            var id = $(this).data('id');
-            var row = $(this).closest('tr');
-            var name = row.find('.name').text();
-            var description = row.find('.description').text();
-            var price = row.find('.price').text();
-
-            // Create editable fields
-            row.find('.name').html('<input type="text" value="'+name+'">');
-            row.find('.description').html('<textarea>'+description+'</textarea>');
-            row.find('.price').html('<input type="number" step="0.01" value="'+price+'">');
-
-            // Change buttons
-            $(this).hide();
-            row.find('.delete-btn').hide();
-            row.find('.save-btn').show();
-            row.find('.cancel-btn').show();
-        });
-
-        // Cancel edit
-        $(document).on('click', '.cancel-btn', function() {
-            loadItems();
-        });
-
-        // Save edited item
-        $(document).on('click', '.save-btn', function() {
-            var id = $(this).data('id');
-            var row = $(this).closest('tr');
-            var name = row.find('.name input').val();
-            var description = row.find('.description textarea').val();
-            var price = row.find('.price input').val();
-
-            $.ajax({
-                url: 'update_item.php',
-                type: 'POST',
-                data: {
-                    id: id,
-                    name: name,
-                    description: description,
-                    price: price
-                },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.success) {
-                        alert('Item updated successfully.');
-                        loadItems();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                },
-                error: function() {
-                    alert('Failed to update item.');
+        $.ajax({
+            url: 'update_item.php',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            encode: true,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.success) {
+                    alert('Item updated successfully.');
+                    loadItems();
+                } else {
+                    alert('Error: ' + data.message);
                 }
-            });
-        });
-
-        // Delete item
-        $(document).on('click', '.delete-btn', function() {
-            if (!confirm('Are you sure you want to delete this item?')) {
-                return;
+            },
+            error: function() {
+                alert('Failed to update item.');
             }
-
-            var id = $(this).data('id');
-
-            $.ajax({
-                url: 'delete_item.php',
-                type: 'POST',
-                data: { id: id },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.success) {
-                        alert('Item deleted successfully.');
-                        loadItems();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                },
-                error: function() {
-                    alert('Failed to delete item.');
-                }
-            });
         });
     });
-    </script>
-</body>
-</html>
+
+    // Delete item
+    $(document).on('click', '.delete-btn', function() {
+        if (!confirm('Are you sure you want to delete this item?')) {
+            return;
+        }
+
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: 'delete_item.php',
+            type: 'POST',
+            data: { id: id },
+            dataType: 'json',
+            success: function(data) {
+                if (data.success) {
+                    alert('Item deleted successfully.');
+                    loadItems();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            },
+            error: function() {
+                alert('Failed to delete item.');
+            }
+        });
+    });
+});
+</script>

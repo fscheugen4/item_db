@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Add a New Item</h1>
-    <form id="itemForm">
+    <form id="itemForm" enctype="multipart/form-data">
         <label for="name">Item Name:</label>
         <input type="text" id="name" name="name" required>
 
@@ -16,10 +16,19 @@
         <label for="price">Price ($):</label>
         <input type="number" id="price" name="price" step="0.01" required>
 
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*">
+
+        <label for="kleinanzeigen_state">State:</label>
+        <input type="text" id="kleinanzeigen_state" name="kleinanzeigen_state">
+
+        <label for="kleinanzeigen_date">Date:</label>
+        <input type="date" id="kleinanzeigen_date" name="kleinanzeigen_date">
+
         <input type="submit" value="Add Item">
     </form>
     <br>
-    <a href="view_items.php">View All Itemsss</a>
+    <a href="view_items.php">View All Items</a>
 
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -30,12 +39,8 @@
         $('#itemForm').submit(function(event) {
             event.preventDefault(); // Prevent the default form submission
 
-            // Collect form data
-            var formData = {
-                name: $('#name').val(),
-                description: $('#description').val(),
-                price: $('#price').val()
-            };
+            // Create FormData object to handle file upload
+            var formData = new FormData(this);
 
             // Send the data using AJAX
             $.ajax({
@@ -43,7 +48,9 @@
                 url: 'add_item_ajax.php',
                 data: formData,
                 dataType: 'json',
-                encode: true
+                encode: true,
+                processData: false,
+                contentType: false
             })
             .done(function(data) {
                 if (data.success) {

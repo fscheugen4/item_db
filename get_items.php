@@ -6,7 +6,7 @@ require_once 'config.php';
 
 // Fetch items from the database
 try {
-    $sql = "SELECT id, name, description, price FROM floris_shop_db";
+    $sql = "SELECT id, name, description, price, image, kleinanzeigen_state, kleinanzeigen_date FROM floris_shop_db";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -19,6 +19,9 @@ try {
                     <th>Name</th>
                     <th>Description</th>
                     <th>Price ($)</th>
+                    <th>Image</th>
+                    <th>State</th>
+                    <th>Date</th>
                     <th>Actions</th>
                 </tr>';
         foreach ($items as $row) {
@@ -26,13 +29,24 @@ try {
                     <td>'.htmlspecialchars($row['id']).'</td>
                     <td class="name">'.htmlspecialchars($row['name']).'</td>
                     <td class="description">'.nl2br(htmlspecialchars($row['description'])).'</td>
-                    <td class="price">'.number_format($row['price'], 2).'</td>
-                    <td>
-                        <button class="edit-btn" data-id="'.htmlspecialchars($row['id']).'">Edit</button>
-                        <button class="save-btn" data-id="'.htmlspecialchars($row['id']).'" style="display:none;">Save</button>
-                        <button class="cancel-btn" data-id="'.htmlspecialchars($row['id']).'" style="display:none;">Cancel</button>
-                        <button class="delete-btn" data-id="'.htmlspecialchars($row['id']).'">Delete</button>
-                    </td>
+                    <td class="price">'.number_format($row['price'], 2).'</td>';
+
+            // Display the image if available
+            if (!empty($row['image'])) {
+                echo '<td><img src="data:image/jpeg;base64,'. $row['image'] .'" alt="Image" width="100"></td>';
+            } else {
+                echo '<td>No Image</td>';
+            }
+
+            echo '<td class="kleinanzeigen_state">'.htmlspecialchars($row['kleinanzeigen_state']).'</td>';
+            echo '<td class="kleinanzeigen_date">'.htmlspecialchars($row['kleinanzeigen_date']).'</td>';
+
+            echo '<td>
+                    <button class="edit-btn" data-id="'.htmlspecialchars($row['id']).'">Edit</button>
+                    <button class="save-btn" data-id="'.htmlspecialchars($row['id']).'" style="display:none;">Save</button>
+                    <button class="cancel-btn" data-id="'.htmlspecialchars($row['id']).'" style="display:none;">Cancel</button>
+                    <button class="delete-btn" data-id="'.htmlspecialchars($row['id']).'">Delete</button>
+                  </td>
                   </tr>';
         }
         echo '</table>';
