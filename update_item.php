@@ -19,7 +19,7 @@ try {
     }
 
     // Update the item
-    $stmt = $conn->prepare("UPDATE items SET name = :name, description = :description, price = :price WHERE id = :id");
+    $stmt = $conn->prepare("UPDATE floris_shop_db SET name = :name, description = :description, price = :price WHERE id = :id");
     $stmt->execute([
         ':id' => $id,
         ':name' => $name,

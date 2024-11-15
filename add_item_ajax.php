@@ -19,7 +19,7 @@ try {
     }
 
     // Prepare and execute the SQL statement using prepared statements
-    $stmt = $conn->prepare("INSERT INTO items (name, description, price) VALUES (:name, :description, :price)");
+    $stmt = $conn->prepare("INSERT INTO floris_shop_db (name, description, price) VALUES (:name, :description, :price)");
     $stmt->execute([
         ':name' => $name,
         ':description' => $description,

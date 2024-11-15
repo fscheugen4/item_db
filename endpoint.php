@@ -1,6 +1,8 @@
 <?php
 // endpoint.php
 
+require_once 'config.php';
+
 // Enable error reporting for debugging
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -30,42 +32,33 @@ $data = json_decode($json, true);
 write_log("Received data: " . $json);
 
 if ($data) {
-    // Connect to the database
-    $mysqli = new mysqli('localhost', 'item_db', 'haxx0r', 'shop_db');
+    try {
+        // Prepare the SQL statement
+        $stmt = $conn->prepare("INSERT INTO floris_shop_db (name, description, price) VALUES (:name, :description, :price)");
 
-    if ($mysqli->connect_error) {
+        // Bind parameters
+        $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':price', $data['price'], PDO::PARAM_STR);
+
+        // Execute the statement
+        if ($stmt->execute()) {
+            $success_message = 'Item inserted successfully with ID ' . $conn->lastInsertId();
+            write_log($success_message);
+            echo json_encode(['success' => true, 'message' => $success_message]);
+        } else {
+            $error_info = $stmt->errorInfo();
+            http_response_code(500);
+            $error_message = 'Execute failed: ' . $error_info[2];
+            write_log($error_message);
+            echo json_encode(['error' => $error_message]);
+        }
+    } catch (PDOException $e) {
         http_response_code(500);
-        $error_message = 'Database connection failed: ' . $mysqli->connect_error;
-        write_log($error_message);
-        echo json_encode(['error' => $error_message]);
-        exit();
-    }
-
-    // Prepare and bind
-    $stmt = $mysqli->prepare("INSERT INTO items (name, description, price) VALUES (?, ?, ?)");
-    if (!$stmt) {
-        http_response_code(500);
-        $error_message = 'Prepare failed: ' . $mysqli->error;
-        write_log($error_message);
-        echo json_encode(['error' => $error_message]);
-        exit();
-    }
-
-    $stmt->bind_param("ssd", $data['name'], $data['description'], $data['price']);
-
-    if ($stmt->execute()) {
-        $success_message = 'Item inserted successfully with ID ' . $stmt->insert_id;
-        write_log($success_message);
-        echo json_encode(['success' => true, 'message' => $success_message]);
-    } else {
-        http_response_code(500);
-        $error_message = 'Execute failed: ' . $stmt->error;
+        $error_message = 'Database error: ' . $e->getMessage();
         write_log($error_message);
         echo json_encode(['error' => $error_message]);
     }
-
-    $stmt->close();
-    $mysqli->close();
 } else {
     http_response_code(400);
     $error_message = 'Invalid JSON data received';

@@ -6,7 +6,7 @@ require_once 'config.php';
 
 // Fetch items from the database
 try {
-    $sql = "SELECT id, name, description, price FROM items";
+    $sql = "SELECT id, name, description, price FROM floris_shop_db";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
